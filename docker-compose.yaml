@@ -1,0 +1,30 @@
+version: '3'
+services:
+    nginx:
+        image: nginx:latest
+        container_name: nginx
+        ports:
+            - '80:80'
+            - '443:443'
+        links:
+            - 'php'
+        volumes:
+            - '/home/nick/www:/var/www'
+            - './config/nginx:/etc/nginx/conf.d'
+            - '/home/nick/www/html:/usr/share/nginx/html'
+    php:
+        build:
+            context: ./docker/php
+        links:
+            - 'mariadb'
+        extra_hosts:
+            - "example.test:172.18.0.4"
+        volumes:
+            - '/home/nick/www/html:/usr/share/nginx/html'
+            - '/home/nick/www:/var/www'
+    mariadb:
+        image: mariadb:10.3.9
+        container_name: mariadb
+        restart: 'on-failure'
+        environment:
+            MYSQL_ROOT_PASSWORD: 'root' 
